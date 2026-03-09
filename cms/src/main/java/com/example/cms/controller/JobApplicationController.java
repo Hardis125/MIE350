@@ -44,26 +44,7 @@ public class JobApplicationController {
     @PostMapping
     public JobApplication createJobApplication(@Valid @RequestBody JobApplicationDto jobApplicationDto) {
         JobApplication application = new JobApplication();
-        application.setCompany(jobApplicationDto.getCompany());
-        application.setRole(jobApplicationDto.getRole());
-        application.setDates(jobApplicationDto.getDates());
-        application.setStatus(jobApplicationDto.getStatus());
-        application.setNotes(jobApplicationDto.getNotes());
-
-        PortfolioUser user = portfolioUserRepository.findById(jobApplicationDto.getUserId())
-                .orElseThrow(() -> new ResourceNotFoundException("User", jobApplicationDto.getUserId()));
-        application.setPortfolioUser(user);
-
-        List<Project> linkedProjects = new ArrayList<>();
-        if (jobApplicationDto.getProjectIds() != null) {
-            for (Long projectId : jobApplicationDto.getProjectIds()) {
-                Project project = projectRepository.findById(projectId)
-                        .orElseThrow(() -> new ResourceNotFoundException("Project", projectId));
-                linkedProjects.add(project);
-            }
-        }
-        application.setLinkedProjects(linkedProjects);
-
+        applyDtoToEntity(application, jobApplicationDto);
         return jobApplicationRepository.save(application);
     }
 
@@ -73,26 +54,7 @@ public class JobApplicationController {
         JobApplication application = jobApplicationRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("JobApplication", id));
 
-        application.setCompany(jobApplicationDto.getCompany());
-        application.setRole(jobApplicationDto.getRole());
-        application.setDates(jobApplicationDto.getDates());
-        application.setStatus(jobApplicationDto.getStatus());
-        application.setNotes(jobApplicationDto.getNotes());
-
-        PortfolioUser user = portfolioUserRepository.findById(jobApplicationDto.getUserId())
-                .orElseThrow(() -> new ResourceNotFoundException("User", jobApplicationDto.getUserId()));
-        application.setPortfolioUser(user);
-
-        List<Project> linkedProjects = new ArrayList<>();
-        if (jobApplicationDto.getProjectIds() != null) {
-            for (Long projectId : jobApplicationDto.getProjectIds()) {
-                Project project = projectRepository.findById(projectId)
-                        .orElseThrow(() -> new ResourceNotFoundException("Project", projectId));
-                linkedProjects.add(project);
-            }
-        }
-        application.setLinkedProjects(linkedProjects);
-
+        applyDtoToEntity(application, jobApplicationDto);
         return jobApplicationRepository.save(application);
     }
 
@@ -102,5 +64,45 @@ public class JobApplicationController {
             throw new ResourceNotFoundException("JobApplication", id);
         }
         jobApplicationRepository.deleteById(id);
+    }
+
+    private void applyDtoToEntity(JobApplication application, JobApplicationDto dto) {
+        application.setCompany(dto.getCompany());
+        application.setRole(dto.getRole());
+        application.setDates(dto.getDates());
+        application.setStatus(dto.getStatus());
+        application.setNotes(dto.getNotes());
+
+        PortfolioUser user = portfolioUserRepository.findById(dto.getUserId())
+                .orElseThrow(() -> new ResourceNotFoundException("User", dto.getUserId()));
+        application.setPortfolioUser(user);
+
+        List<Project> linkedProjects = getProjectsFromIds(dto.getProjectIds(), user.getId());
+        application.setLinkedProjects(linkedProjects);
+    }
+
+    private List<Project> getProjectsFromIds(List<Long> projectIds, Long userId) {
+        List<Project> linkedProjects = new ArrayList<>();
+
+        if (projectIds == null || projectIds.isEmpty()) {
+            return linkedProjects;
+        }
+
+        for (Long projectId : projectIds) {
+            Project project = projectRepository.findById(projectId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Project", projectId));
+
+            // Recommended check: only allow linking projects that belong to the same user
+            if (project.getPortfolioUser() == null ||
+                !project.getPortfolioUser().getId().equals(userId)) {
+                throw new IllegalArgumentException(
+                        "Project " + projectId + " does not belong to user " + userId
+                );
+            }
+
+            linkedProjects.add(project);
+        }
+
+        return linkedProjects;
     }
 }
