@@ -1,5 +1,3 @@
-// This is for JobApplicationController
-//DTO field is projectId
 package com.example.cms.controller;
 
 import com.example.cms.controller.dto.JobApplicationDto;
@@ -92,9 +90,8 @@ public class JobApplicationController {
             Project project = projectRepository.findById(projectId)
                     .orElseThrow(() -> new ResourceNotFoundException("Project", projectId));
 
-            // Recommended check: only allow linking projects that belong to the same user
             if (project.getPortfolioUser() == null ||
-                !project.getPortfolioUser().getId().equals(userId)) {
+                    !project.getPortfolioUser().getId().equals(userId)) {
                 throw new IllegalArgumentException(
                         "Project " + projectId + " does not belong to user " + userId
                 );
