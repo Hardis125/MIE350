@@ -1,6 +1,3 @@
-//This is for the PortfolioUser's controller
-//Only manage user fields
-
 package com.example.cms.controller;
 
 import com.example.cms.controller.dto.PortfolioUserDto;

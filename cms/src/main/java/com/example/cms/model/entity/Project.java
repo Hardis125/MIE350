@@ -3,6 +3,7 @@ package com.example.cms.model.entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,7 @@ public class Project {
     @Column(length = 1000)
     private String overview;
 
+    @Column(length = 1000)
     private String result;
 
     @ManyToOne
@@ -36,7 +38,4 @@ public class Project {
             inverseJoinColumns = @JoinColumn(name = "skillId")
     )
     private List<Skill> skills = new ArrayList<>();
-
-    @ManyToMany(mappedBy = "linkedProjects")
-    private List<JobApplication> linkedApplications = new ArrayList<>();
 }

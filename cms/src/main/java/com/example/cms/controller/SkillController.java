@@ -1,6 +1,3 @@
-//When creating or updating skill name directly is fine
-//but when deleting, it is safer to remove the skill from each Project.skills list first, because Project owns the join table
-
 package com.example.cms.controller;
 
 import com.example.cms.controller.dto.SkillDto;
