@@ -1,9 +1,7 @@
-//When creating or updating skill name directly is fine
-//but when deleting, it is safer to remove the skill from each Project.skills list first, because Project owns the join table
-
 package com.example.cms.controller;
 
 import com.example.cms.controller.dto.SkillDto;
+import com.example.cms.controller.dto.SkillResponseDto;
 import com.example.cms.controller.exceptions.ResourceNotFoundException;
 import com.example.cms.model.entity.Project;
 import com.example.cms.model.entity.Skill;
@@ -15,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/skills")
@@ -27,33 +26,39 @@ public class SkillController {
     private ProjectRepository projectRepository;
 
     @GetMapping
-    public List<Skill> getAllSkills() {
-        return skillRepository.findAll();
+    public List<SkillResponseDto> getAllSkills() {
+        return skillRepository.findAll()
+                .stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
-    public Skill getSkillById(@PathVariable Long id) {
-        return skillRepository.findById(id)
+    public SkillResponseDto getSkillById(@PathVariable Long id) {
+        Skill skill = skillRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Skill", id));
+        return toDto(skill);
     }
 
     @PostMapping
-    public Skill createSkill(@Valid @RequestBody SkillDto skillDto) {
+    public SkillResponseDto createSkill(@Valid @RequestBody SkillDto skillDto) {
         Skill skill = new Skill();
         skill.setName(skillDto.getName());
 
-        return skillRepository.save(skill);
+        Skill savedSkill = skillRepository.save(skill);
+        return toDto(savedSkill);
     }
 
     @PutMapping("/{id}")
-    public Skill updateSkill(@PathVariable Long id,
-                             @Valid @RequestBody SkillDto skillDto) {
+    public SkillResponseDto updateSkill(@PathVariable Long id,
+                                        @Valid @RequestBody SkillDto skillDto) {
         Skill skill = skillRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Skill", id));
 
         skill.setName(skillDto.getName());
 
-        return skillRepository.save(skill);
+        Skill savedSkill = skillRepository.save(skill);
+        return toDto(savedSkill);
     }
 
     @DeleteMapping("/{id}")
@@ -66,6 +71,23 @@ public class SkillController {
             projectRepository.save(project);
         }
 
+        skill.getProjects().clear();
         skillRepository.delete(skill);
+    }
+
+    private SkillResponseDto toDto(Skill skill) {
+        SkillResponseDto dto = new SkillResponseDto();
+        dto.setId(skill.getId());
+        dto.setName(skill.getName());
+
+        if (skill.getProjects() != null) {
+            dto.setProjectIds(
+                    skill.getProjects().stream()
+                            .map(Project::getId)
+                            .collect(Collectors.toList())
+            );
+        }
+
+        return dto;
     }
 }
