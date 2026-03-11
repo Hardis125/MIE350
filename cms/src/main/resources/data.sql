@@ -78,3 +78,9 @@ INSERT INTO application_projects (application_id, project_id) VALUES
                                                                   (10, 10),
                                                                   (11, 11),
                                                                   (12, 12), (12, 4);
+
+-- Reset the auto-increment counters to prevent primary key conflicts
+ALTER TABLE portfolio_users ALTER COLUMN id RESTART WITH 7;
+ALTER TABLE skills ALTER COLUMN id RESTART WITH 16;
+ALTER TABLE projects ALTER COLUMN id RESTART WITH 13;
+ALTER TABLE job_applications ALTER COLUMN id RESTART WITH 13;
