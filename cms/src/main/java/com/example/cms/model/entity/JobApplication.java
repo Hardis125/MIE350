@@ -7,6 +7,7 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.time.LocalDate;
 
 @Entity
 @NoArgsConstructor
@@ -21,7 +22,9 @@ public class JobApplication {
 
     private String company;
     private String role;
-    private String dates;
+    
+    @Column(name= "application_date", nullable = false)
+    private LocalDate applicationDate;
     private String status;
 
     @Column(length = 1000)

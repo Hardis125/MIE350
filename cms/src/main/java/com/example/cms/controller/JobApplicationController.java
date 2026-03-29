@@ -86,7 +86,7 @@ public class JobApplicationController {
     private void applyDtoToEntity(JobApplication application, JobApplicationDto dto) {
         application.setCompany(dto.getCompany());
         application.setRole(dto.getRole());
-        application.setDates(dto.getDates());
+        application.setApplicationDate(dto.getApplicationDate());
         application.setStatus(dto.getStatus());
         application.setNotes(dto.getNotes());
 
@@ -137,7 +137,7 @@ public class JobApplicationController {
         dto.setId(application.getId());
         dto.setCompany(application.getCompany());
         dto.setRole(application.getRole());
-        dto.setDates(application.getDates());
+        dto.setApplicationDate(application.getApplicationDate());
         dto.setStatus(application.getStatus());
         dto.setNotes(application.getNotes());
 

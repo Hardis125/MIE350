@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.util.List;
 
@@ -19,10 +20,12 @@ public class ProjectDto {
     @Size(max = 1000, message = "Overview cannot exceed 1000 characters")
     private String overview;
 
+    @Size(max=1000, message = "Result cannot exceed 1000 characters")
     private String result;
 
     @NotNull(message = "A project must belong to a user")
+    @Positive(message = "User ID must be a positive number")
     private Long userId;
 
-    private List<Long> skillIds;
+    private List<@Positive(message = "Each skill ID must be a positive number") Long> skillIds;
 }

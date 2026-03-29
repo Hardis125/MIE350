@@ -37,7 +37,7 @@ INSERT INTO projects (id, title, overview, result, user_id) VALUES
                                                                 (11, 'Portfolio Website Redesign', 'Modernized personal website with project showcase and recruiter view', 'Improved visual presentation and navigation', 6),
                                                                 (12, 'Marketing Campaign Performance Dashboard', 'Dashboard for comparing campaign reach, engagement, and conversion', 'Helped evaluate campaign effectiveness across channels', 6);
 
-INSERT INTO job_applications (id, company, role, dates, status, notes, user_id) VALUES
+INSERT INTO job_applications (id, company, role, application_date, status, notes, user_id) VALUES
                                                                                     (1, 'TechNova', 'Software Engineer Intern', '2026-03', 'Applied', 'Highlighted backend and API development projects', 1),
                                                                                     (2, 'DataBridge', 'Data Analyst Intern', '2026-03', 'Interview', 'Selected dashboard and analytics-focused projects', 1),
                                                                                     (3, 'UrbanLink', 'UX Research Intern', '2026-02', 'Applied', 'Referenced wayfinding and redesign experience', 2),

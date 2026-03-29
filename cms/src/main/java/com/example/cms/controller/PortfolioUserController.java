@@ -48,10 +48,16 @@ public class PortfolioUserController {
 
     @PostMapping
     public PortfolioUserResponseDto createUser(@Valid @RequestBody PortfolioUserDto userDto) {
+        String normalizedEmail = userDto.getEmail().trim();
+
+        if (portfolioUserRepository.existsByEmailIgnoreCase(normalizedEmail)){
+            throw new IllegalArgumentException("Email already exists");
+        }
+
         PortfolioUser user = new PortfolioUser();
         user.setFirstName(userDto.getFirstName());
         user.setLastName(userDto.getLastName());
-        user.setEmail(userDto.getEmail());
+        user.setEmail(normalizedEmail);
 
         PortfolioUser savedUser = portfolioUserRepository.save(user);
         return toDto(savedUser);
@@ -63,9 +69,16 @@ public class PortfolioUserController {
         PortfolioUser user = portfolioUserRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User", id));
 
+        String normalizedEmail = userDto.getEmail().trim();
+
+        if(!user.getEmail().equalsIgnoreCase(normalizedEmail) &&
+            portfolioUserRepository.existsByEmailIgnoreCase(normalizedEmail)) {
+                throw new IllegalArgumentException("Email already exists");
+            }
+
         user.setFirstName(userDto.getFirstName());
         user.setLastName(userDto.getLastName());
-        user.setEmail(userDto.getEmail());
+        user.setEmail(normalizedEmail);
 
         PortfolioUser savedUser = portfolioUserRepository.save(user);
         return toDto(savedUser);
